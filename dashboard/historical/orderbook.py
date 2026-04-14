@@ -21,7 +21,6 @@ def build_figure(
         vol_matrix, raw_vol_matrix = process_prices(prices_df)
         plot_quotes(fig, prices_df, vol_matrix, raw_vol_matrix)
 
-    print(prices_df)
     prices_df = calc_fair_price(prices_df)
     plot_fair_prices(fig, prices_df)
 
