@@ -1,7 +1,5 @@
 # IMC Prosperity 4 - Simulation Dashboard
 
-A comprehensive dashboard and strategy development environment for the IMC Prosperity 4 challenge. This project integrates a high-performance Rust-based backtester via submodules and a React-based visualizer.
-
 ## Prerequisites
 
 Before starting, ensure you have the following installed on your system:
@@ -27,7 +25,7 @@ curl -LsSf [https://astral.sh/uv/install.sh](https://astral.sh/uv/install.sh) | 
 Clone the repository to get it on your system. If you want the folder in a specific place then open your terminal in that folder by right clicking in the files app and pressing open in terminal. Then copy these two commands.
 
 ```powershell
-git clone --recursive <YOUR_REPO_URL>
+git clone --recursive https://github.com/Uzu-Tech/imc-prosperity-4
 cd imc-prosperity-4
 ```
 
@@ -46,6 +44,8 @@ Run this command to create the virtual environment and download and the required
 ```powershell
 uv sync
 ```
+
+Then just restart your terminal and click yes is Vscode asks to use the virtual environment.
 
 ## How to run the dashboard
 
