@@ -47,6 +47,8 @@ Run this command to create the virtual environment and download and the required
 uv sync
 ```
 
+Then just restart your terminal and click yes is Vscode asks to use the virtual environment.
+
 ## How to run the dashboard
 
 First of all make sure you download all the csv files from the IMC website and put it in a folder called `csv-files`.
