@@ -15,6 +15,5 @@ analysis/
 datamodel.py
 test.py
 *.ipynb
-trader.py
 tmp/
 backtester/
