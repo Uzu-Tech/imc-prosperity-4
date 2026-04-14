@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import sys
 from dotenv import load_dotenv
+import polars.selectors as cs
 
 load_dotenv()
 CSV_DIR = os.getenv("CSV_SOURCE")
@@ -92,7 +93,11 @@ def get_default_day_value() -> str:
 
 def get_prices_df(round_num: int, day: int, product: str) -> pl.DataFrame:
     df = all_prices.get((round_num, day), pl.DataFrame())
-    return df.filter(pl.col("product") == product)
+    prices_df = df.filter(pl.col("product") == product)
+    prices_df = prices_df.with_columns(
+        cs.starts_with("bid", "ask").cast(pl.Float64, strict=False)
+    )
+    return prices_df
 
 def get_trades_df(round_num: int, day: int, product: str) -> pl.DataFrame:
     df = all_trades.get((round_num, day), pl.DataFrame())

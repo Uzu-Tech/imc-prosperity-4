@@ -117,8 +117,11 @@ def load_log(file_path):
     prices_df = prices_df.with_columns(
         pl.col("profit_and_loss").diff().alias("pnl_per_step").over("product")
     )
-
-
+    
+    prices_df = prices_df.with_columns(
+        cs.starts_with("bid", "ask").cast(pl.Float64, strict=False)
+    )
+    
     own_trades = trades_df.filter(
         (pl.col('buyer') == "SUBMISSION") | (pl.col('seller') == "SUBMISSION")
     )
