@@ -1,7 +1,5 @@
 # IMC Prosperity 4 - Simulation Dashboard
 
-A comprehensive dashboard and strategy development environment for the IMC Prosperity 4 challenge. This project integrates a high-performance Rust-based backtester via submodules and a React-based visualizer.
-
 ## Prerequisites
 
 Before starting, ensure you have the following installed on your system:
