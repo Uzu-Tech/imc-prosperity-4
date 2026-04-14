@@ -8,3 +8,11 @@ wheels/
 
 # Virtual environments
 .venv
+csv-files/
+imc-log-files/
+backtest-log-files/
+analysis/
+datamodel.py
+test.py
+*.ipynb
+trader.py

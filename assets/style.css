@@ -1,0 +1,35 @@
+.dash-range-slider-input {
+    background: transparent !important;
+    border: 1px solid #C8C8C8 !important;
+    color: #C8C8C8 !important;
+    font-family: monospace !important;
+    font-size: 14px !important;
+    border-radius: 4px !important;
+    padding: 2px 6px !important;
+    text-align: center !important;
+}
+
+.dash-slider-track {
+    background-color: #444 !important;
+}
+
+.dash-slider-range {
+    background-color: #5BC0DE !important;
+}
+
+.dash-slider-thumb {
+    background-color: #5BC0DE !important;
+    border: 2px solid #5BC0DE !important;
+}
+
+.dash-slider-thumb:hover,
+.dash-slider-thumb:focus {
+    border-color: #ffffff !important;
+    background-color: #5BC0DE !important;
+}
+
+.btn-clear-custom:hover {
+    background-color: #5BC0DE !important;
+    color: #111 !important;
+    border-color: #5BC0DE !important;
+}
