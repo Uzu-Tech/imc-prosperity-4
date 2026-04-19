@@ -21,11 +21,3 @@ dependencies = [
     "scipy>=1.17.1",
     "statsmodels>=0.14.6",
 ]
-
-[tool.uv.workspace]
-members = [
-    "backtester/backtester",
-]
-
-[tool.uv.sources]
-prosperity4mcbt = { workspace = true, editable = true }
