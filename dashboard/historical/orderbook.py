@@ -1,7 +1,8 @@
 # dashboard/historical/orderbook.py
 from typing import Optional
 import plotly.graph_objects as go
-from dashboard.prices import process_prices, calc_fair_price
+from dashboard.prices import process_prices
+from analysis.prices import calc_fair_price
 from dashboard.trades import process_trades
 from loaders.csv_loader import get_prices_df, get_trades_df
 from dashboard.shared.orderbook import (

@@ -26,12 +26,12 @@ def format_log(logs_df: pl.DataFrame, timestamp, product):
     trade = data.get("MARKET_BUY")
     if trade:
         lines.append(f"Market Buy Order: {trade['quantity']} units @ avg {trade['avg_price']} "
-                        f"(Best price: {trade.get('min_price')}, Slippage: {trade.get('slippage', '0')})")
+                        f"(Best price: {trade.get('min_price')}, Slippage: {trade.get('slippage', '0')})\n")
 
     trade = data.get("MARKET_SELL")
     if trade:
         lines.append(f"Market Sell Order: {trade['quantity']} units @ avg {trade['avg_price']} "
-                        f"(Best price: {trade.get('max_price')}, Slippage: {trade.get('slippage', '0')})")
+                        f"(Best price: {trade.get('max_price')}, Slippage: {trade.get('slippage', '0')})\n")
 
     buys: list[dict] = data.get("BUY_ORDERS", [])
     sells = data.get("SELL_ORDERS", [])
@@ -45,9 +45,9 @@ def format_log(logs_df: pl.DataFrame, timestamp, product):
         sells.sort(key=lambda o: o["price"], reverse=True)
         sell_str = ", ".join([f"  - {abs(s['quantity'])} @ {s['price']}" for s in sells])
         lines.append(f"All Sell Orders:\n{sell_str}\n")
-
-    errors = data.get("ERRORS", [])
-    if errors:
-        lines.append(f"ERRORS: {', '.join(errors)}")
+    
+    for key, value in data.items():
+        if key not in ['ERRORS', 'POSITION', 'MARKET_BUY', 'MARKET_SELL', 'BUY_ORDERS', 'SELL_ORDERS']:
+            lines.append(f"{key}: {value}\n")
 
     return "\n".join(lines)

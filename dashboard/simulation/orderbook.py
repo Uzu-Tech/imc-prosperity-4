@@ -1,7 +1,8 @@
 from typing import Optional
 import plotly.graph_objects as go
 import polars as pl
-from dashboard.prices import process_prices, calc_fair_price
+from dashboard.prices import process_prices
+from analysis.prices import calc_fair_price
 from dashboard.trades import process_trades
 from loaders.log_loader import (
     get_prices_df, get_trades_df, get_logs_df,
@@ -13,6 +14,7 @@ from dashboard.shared.orderbook import (
 from plotly.subplots import make_subplots
 from dashboard.prices import get_min_max_price
 import numpy as np
+from trader import POSITION_LIMITS
 
 OWN_SELL_COLOR  = "#FF6EB4"
 OWN_BUY_COLOR = "#00D4FF"
@@ -23,7 +25,7 @@ def plot_own_makes_heatmap(fig, own_makes, prices_df):
 
     price_min, price_max = get_min_max_price(prices_df)
     timestamps   = prices_df["timestamp"].to_list()
-    price_range  = list(range(price_min, price_max + 1))
+    price_range  = list(range(round(price_min), round(price_max + 1)))
     price_to_idx = {p: i for i, p in enumerate(price_range)}
     time_to_idx  = {t: i for i, t in enumerate(timestamps)}
 
@@ -232,11 +234,7 @@ def build_figure(
 
 
 def plot_position(fig, logs, product):
-    position_limits = {
-        "EMERALDS": 80,
-        "TOMATOES": 80,
-    }
-    limit = position_limits.get(product, 20)
+    limit = POSITION_LIMITS.get(product, 20)
     warning_zone = limit * 0.8  # ← shade when within 20% of limit
 
     timestamps = logs["timestamp"].to_list()

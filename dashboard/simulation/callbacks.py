@@ -9,7 +9,7 @@ from loaders.log_loader import (
 )
 from dashboard.log_formatter import format_log
 from dashboard.simulation.metrics import calc_metrics
-from dashboard.prices import calc_fair_price
+from analysis.prices import calc_fair_price
 import json
 
 def _get_timestamps(selector: str, product: str) -> list:

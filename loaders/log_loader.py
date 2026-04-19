@@ -121,7 +121,7 @@ def load_log(file_path):
     prices_df = prices_df.with_columns(
         cs.starts_with("bid", "ask").cast(pl.Float64, strict=False)
     )
-    
+
     own_trades = trades_df.filter(
         (pl.col('buyer') == "SUBMISSION") | (pl.col('seller') == "SUBMISSION")
     )
@@ -244,17 +244,25 @@ def get_own_makes(logs: pl.DataFrame, prices_df: pl.DataFrame, own_takes: pl.Dat
 
     for col_name, other_col_name, side in zip(col_names, reversed(col_names), sides):
         side_make = (
-            logs
-            .drop(other_col_name, strict=False)
-            .filter(
-                pl.col(col_name).is_not_null() &
-                (pl.col(col_name).list.len() > 0)
+                logs
+                .drop(other_col_name, strict=False)
+                .filter(
+                    pl.col(col_name).is_not_null() &
+                    (pl.col(col_name).list.len() > 0)
+                )
             )
-            .with_columns(pl.lit(side).alias("order_type"))
-            .explode(col_name)
-            .unnest(col_name)
-            .with_columns(pl.col('quantity').abs())
-        )
+
+        # 2. ADDITIONAL GUARD: If the filter removed all rows, skip the unnest
+        if side_make.is_empty():
+            continue
+
+        side_make = (
+                side_make
+                .with_columns(pl.lit(side).alias("order_type"))
+                .explode(col_name)
+                .unnest(col_name) # This will now safely have Struct data
+                .with_columns(pl.col('quantity').abs())
+            )
 
         threshold_col = "best_bid" if side == "bid" else "best_ask"
         side_make = (
