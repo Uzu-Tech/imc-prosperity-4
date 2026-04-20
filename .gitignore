@@ -12,6 +12,7 @@ csv-files/
 imc-log-files/
 backtest-log-files/
 test.py
-*.ipynb
+round-1.ipynb
+logs.ipynb
 tmp/
 backtester/

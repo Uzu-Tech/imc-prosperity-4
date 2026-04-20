@@ -229,7 +229,7 @@ class FairPriceCalculator(BaseTrader):
 # ──── Trading Strategies ─────
 class BuyAndHold(BaseTrader):
     def get_orders(self):
-        eplison = 0.3
+        epsilon = 0.3
         # Spread to fill empty order book (max spread is +/- 100 from internal IMC fair price so 99 to be safe)
         gap_spread = 99
         # Minimum edge before taking mispriced orders
@@ -252,13 +252,13 @@ class BuyAndHold(BaseTrader):
 
         self.saved_data["MID_PRICE_HISTORY"] = mid_price_history
 
-        delta_mid_price = 0.0
+        delta_mid_price = 10
 
         if len(mid_price_history) == 100:
             delta_mid_price = mid_price_history[-1] - mid_price_history[0]
 
         # Skew fair price in linear direction
-        real_fair_price = mid_price + eplison * delta_mid_price
+        real_fair_price = mid_price + epsilon * delta_mid_price
 
         if delta_mid_price >= 0:
             if self.position < taking_limit:
@@ -282,30 +282,36 @@ class BuyAndHold(BaseTrader):
             # Dump all our holdings
             self.market_sell(max_quantity=self.pos_limit)
 
+        self.logger.log("DELTA_PRICE", delta_mid_price)
+
         return {self.product: self.orders}
 
 class MeanReversionMarketMaker(BaseTrader):
     def get_orders(self):
         MU_PRIOR = 10_000
-        eplison = 0.65
+        epsilon = 0.65
         gap_spread = 99
         edge = 1.5
         PRIOR_STRENGTH = 2000
+        WINDOW_LENGTH = 1500
 
         mid_price = self.get_ewm(name='mid_price', value=self.mid, half_life=2)
 
         if mid_price is None:
-            long_run_mean = self.get_ewm(name='long_run_mean', value=MU_PRIOR, half_life=10_000)
             return {self.product: self.orders}
-        
-        # --- Long-run empirical mean (slow EWM) ---
-        long_run_mean = self.get_ewm(name='long_run_mean', value=mid_price, half_life=10_000)
 
+        mid_price_history = self.saved_data.get("MID_PRICE_HISTORY", [])
+        mid_price_history.append(mid_price)
+
+        if len(mid_price_history) > WINDOW_LENGTH:
+            mid_price_history.pop(0)
+
+        self.saved_data["MID_PRICE_HISTORY"] = mid_price_history
+
+        long_run_mean = sum(mid_price_history) / len(mid_price_history)
         num_timestamps = self.state.timestamp / UNIT_TIMESTAMP
 
-        # --- Bayesian blend: prior fades as obs_count grows ---
-        # When obs_count << PRIOR_STRENGTH  →  MU ≈ MU_PRIOR
-        # When obs_count >> PRIOR_STRENGTH  →  MU ≈ long_run_mean
+        # Using bayesian idea here linearly scales based on how much we trust our PRIOR MU or the Long run ewm
         if long_run_mean is not None:
             prior_weight = PRIOR_STRENGTH / (PRIOR_STRENGTH + num_timestamps)
             data_weight = 1 - prior_weight
@@ -314,7 +320,7 @@ class MeanReversionMarketMaker(BaseTrader):
             MU = MU_PRIOR  
 
         # Mean reverting fair price skew
-        real_fair_price = MU + eplison * (mid_price - MU)
+        real_fair_price = MU + epsilon * (mid_price - MU)
         
         # Take any mispriced orders
         self.market_sell(min_price=real_fair_price + edge, max_quantity=self.pos_limit)
@@ -351,6 +357,9 @@ TRADERS = {
 
 # ──── Trader Class ─────
 class Trader:
+    def bid(self):
+        return 0
+
     def run(self, state: TradingState):
 
         logger = Logger(state)
