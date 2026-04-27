@@ -8,12 +8,14 @@ from loaders.csv_loader import get_prices_df, get_trades_df
 from dashboard.shared.orderbook import (
     plot_quotes, plot_fair_prices, plot_trades, filter_timestamp,
 )
+import polars as pl
 
 def build_figure(
     round_num: int, day: int, product: str,
     show_quotes: bool, show_trades: bool,
     timestamp_range: tuple,
     qty_range: Optional[tuple], qty_exact: Optional[int],
+    mark_type
 ) -> go.Figure:
     prices_df = get_prices_df(round_num, day, product)
     fig = go.Figure()
@@ -26,9 +28,13 @@ def build_figure(
     plot_fair_prices(fig, prices_df)
 
     if show_trades:
-        trades_df = get_trades_df(round_num, day, product)
+        trades_df = get_trades_df(round_num, day, product)    
         trades_df = process_trades(prices_df, trades_df)
-        plot_trades(fig, trades_df, qty_range, qty_exact)
+        
+        if mark_type != 'ALL':
+            trades_df = trades_df.filter((pl.col("buyer") == mark_type) | (pl.col("seller") == mark_type))
+        
+        plot_trades(fig, trades_df, qty_range, qty_exact, mark_type)
 
     filter_timestamp(fig, prices_df, timestamp_range)
 

@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dashboard.shared.components import (
-    product_dropdown_col, toggle_col,
+    product_dropdown_col, toggle_col, trader_dropdown_col,
     trade_controls_collapse, timestamp_slider_row, CONTAINER_STYLE,
 )
 from loaders.csv_loader import get_day_dropdown_options, get_default_day_value
@@ -21,6 +21,7 @@ def get_layout():
             width="auto", className="ms-auto d-flex align-items-center",
         ),
         product_dropdown_col(),
+        trader_dropdown_col(),
         toggle_col(),
     ], align="center", className="mb-3 mt-3")
 
@@ -29,7 +30,7 @@ def get_layout():
         trade_controls_collapse(),
         dbc.Row(dbc.Col(dcc.Loading(type="circle", color="#5BC0DE",
             children=dcc.Graph(id="order-book-plot",
-                config={"responsive": True, "displayModeBar": False},
+                config={"responsive": True, "displayModeBar": True},
                 style={"height": "65vh"})), width=12), className="mb-2"),
         timestamp_slider_row(),
     ], fluid=True, style=CONTAINER_STYLE)

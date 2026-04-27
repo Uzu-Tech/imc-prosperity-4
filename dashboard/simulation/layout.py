@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dashboard.shared.components import (
-    product_dropdown_col, toggle_col,
+    product_dropdown_col, toggle_col, trader_dropdown_col,
     trade_controls_collapse, timestamp_slider_row, CONTAINER_STYLE,
 )
 from loaders.log_loader import log_names
@@ -21,6 +21,7 @@ def get_layout():
             width="auto", className="ms-auto d-flex align-items-center",
         ),
         product_dropdown_col(),
+        trader_dropdown_col()
     ], align="center", className="mb-3 mt-3")
 
     toggle_row = dbc.Row([
@@ -38,7 +39,7 @@ def get_layout():
         dcc.Loading(
             type="circle", color="#5BC0DE",
             children=dcc.Graph(id="order-book-plot",
-                config={"responsive": True, "displayModeBar": False},
+                config={"responsive": True, "displayModeBar": True},
                 style={"height": "60vh"},
                 clear_on_unhover=True
             )
@@ -97,7 +98,7 @@ def get_layout():
         dcc.Loading(
             type="circle", color="#5BC0DE",
             children=dcc.Graph(id="position-pnl-plot",
-                config={"responsive": True, "displayModeBar": False},
+                config={"responsive": True, "displayModeBar": True},
                 style={"height": "50vh"},
             )
         ), width=12

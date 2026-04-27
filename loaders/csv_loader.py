@@ -85,6 +85,13 @@ def get_products(round_num: int, day: int) -> list[str]:
         return []
     return df["product"].unique().sort().to_list()
 
+def get_marks(round_num: int, day: int) -> list[str]:
+    df = all_trades.get((round_num, day))
+    if df is None:
+        return []
+
+    return ['ALL', ] + list(set(df["buyer"].to_list()) | set(df["seller"].to_list()))
+
 def get_default_day_value() -> str:
     r, d = available_keys[0]
     return f"{r}_{d}"

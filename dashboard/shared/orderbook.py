@@ -29,7 +29,7 @@ def plot_fair_prices(fig, prices_df):
         hovertemplate="Fair Price: %{y}<br>Time: %{x}<extra></extra>",
     ))
 
-def plot_trades(fig, trades_df, qty_range: Optional[tuple], qty_exact: Optional[int]):
+def plot_trades(fig, trades_df, qty_range: Optional[tuple], qty_exact: Optional[int], mark_type: str):
     if trades_df.is_empty():
         return
 
@@ -55,7 +55,19 @@ def plot_trades(fig, trades_df, qty_range: Optional[tuple], qty_exact: Optional[
                 opacity=(buys["quantity"] / max_qty * 0.7 + 0.3).to_list(),
                 line=dict(color="white", width=0.5),
             ),
-            hovertemplate="BUY<br>Price: %{y}<br>Qty: %{text}<br>Time: %{x}<extra></extra>",
+            hovertemplate=(
+                "BUY<br>"
+                "Price: %{y}<br>"
+                "Qty: %{customdata[0]}<br>"
+                "Buyer: %{customdata[1]}<br>"
+                "Seller: %{customdata[2]}<br>"
+                "Time: %{x}<extra></extra>"
+            ),
+            customdata=list(zip(
+                buys["quantity"].to_list(),
+                buys["buyer"].to_list(),
+                buys["seller"].to_list(),
+            )),
             text=buys["quantity"].to_list(),
         ))
 
@@ -69,8 +81,19 @@ def plot_trades(fig, trades_df, qty_range: Optional[tuple], qty_exact: Optional[
                 opacity=(sells["quantity"] / max_qty * 0.7 + 0.3).to_list(),
                 line=dict(color="white", width=0.5),
             ),
-            hovertemplate="SELL<br>Price: %{y}<br>Qty: %{text}<br>Time: %{x}<extra></extra>",
-            text=sells["quantity"].to_list(),
+            hovertemplate=(
+                "SELL<br>"
+                "Price: %{y}<br>"
+                "Qty: %{customdata[0]}<br>"
+                "Buyer: %{customdata[1]}<br>"
+                "Seller: %{customdata[2]}<br>"
+                "Time: %{x}<extra></extra>"
+            ),
+            customdata=list(zip(
+                sells["quantity"].to_list(),
+                sells["buyer"].to_list(),
+                sells["seller"].to_list(),
+            )),
         ))
 
 def plot_quotes(fig, prices_df, vol_matrix, raw_vol_matrix):

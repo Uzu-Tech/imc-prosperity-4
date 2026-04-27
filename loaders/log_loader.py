@@ -341,6 +341,13 @@ def get_products(log_name: str) -> list[str]:
         return []
     return df["product"].unique().sort().to_list()
 
+def get_marks(log_name: str) -> list[str]:
+    df = all_trades.get(log_name)
+    if df is None:
+        return []
+    
+    return ['ALL', ] + list(set(df["buyer"].to_list()) & set(df["seller"].to_list()))
+
 # ── Data accessors ────
 
 def get_prices_df(log_name: str, product: str) -> pl.DataFrame:

@@ -3,9 +3,10 @@ name = "imc-prosperity-4"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "arch>=8.0.0",
+    "cpp-prosperity-backtester>=0.1.0",
     "dash>=4.1.0",
     "dash-bootstrap-components>=2.0.4",
     "nbformat>=5.10.4",

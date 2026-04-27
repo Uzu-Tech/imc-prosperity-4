@@ -193,6 +193,7 @@ def build_figure(
     show_imc_price: bool,
     timestamp_range: tuple,
     qty_range: Optional[tuple], qty_exact: Optional[int],
+    mark_type: str
 ) -> go.Figure:
     prices_df = get_prices_df(log_name, product)
     fig = go.Figure()
@@ -213,8 +214,12 @@ def build_figure(
 
     if show_trades:
         trades_df = get_trades_df(log_name, product)
+
+        if mark_type != 'ALL':
+            trades_df = trades_df.filter((pl.col("buyer") == mark_type) | (pl.col("seller") == mark_type))
+            
         trades_df = process_trades(prices_df, trades_df)
-        plot_trades(fig, trades_df, qty_range, qty_exact)
+        plot_trades(fig, trades_df, qty_range, qty_exact, mark_type)
 
     if show_own_trades:
         own_takes = get_own_takes_df(log_name, product)

@@ -11,6 +11,17 @@ def product_dropdown_col() -> dbc.Col:
         ),
         width="auto", className="ms-2 d-flex align-items-center",
     )
+    
+def trader_dropdown_col() -> dbc.Col:
+    return dbc.Col(
+        dbc.Select(
+            id="trader-dropdown",
+            options=[], value=None,
+            className="bg-dark text-light border-light",
+            style={"fontFamily": "monospace", "minWidth": "140px"},
+        ),
+        width="auto", className="d-flex align-items-center",
+    )
 
 def toggle_col(
     extra_options: list = [],

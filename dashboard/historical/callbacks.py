@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 from dashboard.shared.callbacks import register_shared_callbacks, FIGURE_LAYOUT
 from dashboard.historical.orderbook import build_figure
 from loaders.csv_loader import (
-    get_timestamps, get_products,
+    get_timestamps, get_products, get_marks,
     get_max_qty, parse_day_value,
 )
 
@@ -32,6 +32,20 @@ def register_callbacks(app):
         options = [{"label": p, "value": p} for p in prods]
         value = current_product if current_product in prods else (prods[0] if prods else None)
         return options, value
+    
+    # Update Product Dropdown
+    @app.callback(
+        Output("trader-dropdown", "options"),
+        Output("trader-dropdown", "value"),
+        Input("selector-dropdown", "value"),
+        Input("trader-dropdown", "value"),
+    )
+    def update_traders(round_day, current_trader):
+        round_num, day = parse_day_value(round_day)
+        traders = get_marks(round_num, day)
+        options = [{"label": trader, "value": trader} for trader in traders]
+        value = current_trader if current_trader in traders else (traders[0] if traders else None)
+        return options, value
 
     # Update Graph
     @app.callback(
@@ -42,8 +56,9 @@ def register_callbacks(app):
         Input("timestamp-slider", "value"),
         Input("qty-slider", "value"),
         Input("qty-exact", "value"),
+        Input("trader-dropdown", "value"),
     )
-    def update_plot(round_day, product, display_options, timestamp_range, qty_range, qty_exact):
+    def update_plot(round_day, product, display_options, timestamp_range, qty_range, qty_exact, mark_type):
         if not product or not round_day or not timestamp_range:
             return go.Figure()
         display_options = display_options or []
@@ -55,6 +70,7 @@ def register_callbacks(app):
             timestamp_range=timestamp_range,
             qty_range      =tuple(qty_range) if qty_range else None,
             qty_exact      =qty_exact,
+            mark_type      =mark_type
         )
         fig.update_layout(**FIGURE_LAYOUT) # type: ignore
         return fig

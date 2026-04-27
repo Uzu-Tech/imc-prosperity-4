@@ -59,8 +59,18 @@ def _calc_making_metrics(own_makes: pl.DataFrame, prices_df: pl.DataFrame, trade
     total_quotes = len(own_makes)
     quote_rate   = total_quotes / (len(prices_df.get_column("timestamp")) * 2) * 100 if total_quotes > 0 else 0
 
-    filled_quotes = trades_df.filter(pl.col('buyer') == 'SUBMISSION')
-    fill_prob = len(filled_quotes) / len(bids) * 100
+    filled_bids = trades_df.filter(pl.col('buyer') == 'SUBMISSION')
+    filled_asks = trades_df.filter(pl.col('seller') == 'SUBMISSION')
+    filled_quotes = trades_df.filter((pl.col('buyer') == 'SUBMISSION') | (pl.col('seller') == 'SUBMISSION'))
+    if len(bids) and len(asks):
+        fill_prob = np.mean([len(filled_bids) / len(bids) * 100, len(filled_asks) / len(asks) * 100])
+    elif len(bids):
+        fill_prob = len(filled_bids) / len(bids) * 100  
+    elif len(asks):
+        fill_prob = len(filled_asks) / len(asks) * 100
+    else:
+        fill_prob = 0
+    
     avg_fill_size = filled_quotes.get_column('quantity').mean() if not filled_quotes.is_empty() else 0
 
     return {
